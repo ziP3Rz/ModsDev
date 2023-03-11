@@ -20,6 +20,7 @@ modId="testmod" #mandatory
 # ${file.jarVersion} will substitute the value of the Implementation-Version as read from the mod's JAR file metadata
 # see the associated build.gradle script for how to populate this completely automatically during a build
 version="0.0.1-1.19.3" #mandatory
+#version="${file.jarVersion}"
  # A display name for the mod
 displayName="Test Mod" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification https://mcforge.readthedocs.io/en/latest/gettingstarted/autoupdate/
