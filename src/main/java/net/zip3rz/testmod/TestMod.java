@@ -1,5 +1,12 @@
 package net.zip3rz.testmod;
 
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.level.block.MossBlock;
+import net.zip3rz.testmod.block.ModBlocks;
+import net.zip3rz.testmod.item.ModCreativeModeTabs;
 import net.zip3rz.testmod.item.ModItems;
 
 import com.mojang.logging.LogUtils;
@@ -27,6 +34,7 @@ public class TestMod {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         ModItems.register(modEventBus);
+        ModBlocks.register(modEventBus);
 
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
@@ -34,13 +42,23 @@ public class TestMod {
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
 
+        modEventBus.addListener(this::addCreative);
+
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
-
     }
 
     private void addCreative(CreativeModeTabEvent.BuildContents event) {
+        if(event.getTab() == CreativeModeTabs.FOOD_AND_DRINKS || event.getTab() == ModCreativeModeTabs.TEST_TAB) {
+            event.accept(ModItems.TROCOLON);
+            event.accept(ModItems.TROCOLON_PRENDIDO);
+        }
+
+        if(event.getTab() == CreativeModeTabs.BUILDING_BLOCKS) {
+            event.accept(ModBlocks.TUBERIA);
+            event.accept(ModBlocks.CUBE);
+        }
 
     }
 

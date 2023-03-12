@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "facing=north": { "model": "testmod:block/tuberia" },
+    "facing=east": { "model": "testmod:block/tuberia", "y": 90 },
+    "facing=south": { "model": "testmod:block/tuberia", "y": 180 },
+    "facing=west": { "model": "testmod:block/tuberia", "y": 270 },
+    "facing=up": { "model": "testmod:block/tuberia", "x": 90 },
+    "facing=down": { "model": "testmod:block/tuberia", "x": 90 }
+  }
+}
