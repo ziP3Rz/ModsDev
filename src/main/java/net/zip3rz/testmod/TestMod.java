@@ -6,6 +6,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.level.block.MossBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.zip3rz.testmod.block.ModBlocks;
 import net.zip3rz.testmod.item.ModCreativeModeTabs;
 import net.zip3rz.testmod.item.ModItems;
@@ -68,6 +69,7 @@ public class TestMod {
     public static class ClientModEvents {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
+
         }
     }
 }
