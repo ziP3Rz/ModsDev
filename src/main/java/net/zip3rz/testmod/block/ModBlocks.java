@@ -12,6 +12,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.zip3rz.testmod.TestMod;
+import net.zip3rz.testmod.block.custom.CubeBlock;
 import net.zip3rz.testmod.block.custom.TuberiaBlock;
 import net.zip3rz.testmod.item.ModItems;
 
@@ -22,11 +23,11 @@ public class ModBlocks {
                 DeferredRegister.create(ForgeRegistries.BLOCKS, TestMod.MOD_ID);
 
     public static final RegistryObject<Block> CUBE = registerBlock("cube",
-            () -> new Block(BlockBehaviour.Properties.of(Material.METAL).strength(6f).requiresCorrectToolForDrops())
+            () -> new CubeBlock(BlockBehaviour.Properties.copy(Blocks.HOPPER).strength(6f).requiresCorrectToolForDrops())
     );
 
     public static final RegistryObject<Block> TUBERIA = registerBlock("tuberia",
-            () -> new TuberiaBlock(BlockBehaviour.Properties.copy(Blocks.HOPPER).noOcclusion())
+            () -> new TuberiaBlock(BlockBehaviour.Properties.copy(Blocks.HOPPER).noOcclusion().requiresCorrectToolForDrops())
     );
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {

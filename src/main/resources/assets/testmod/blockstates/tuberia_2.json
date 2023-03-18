@@ -1,0 +1,50 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "testmod:block/tuberia_horizontal"
+      }
+    },
+    {
+      "apply": {
+        "model": "testmod:block/tuberia_horizontal"
+      },
+      "when": {
+        "number_neighbours": 0
+      }
+    },
+    {
+      "apply": {
+        "model": "testmod:block/tuberia_vertical"
+      },
+      "when": {
+        "OR": [
+          {
+            "number_neighbours": 1,
+            "up": "true"
+          },
+          {
+            "number_neighbours": 1,
+            "down": "true"
+          }
+        ]
+      }
+    },
+    {
+      "apply": {
+        "model": "testmod:block/tuberia_horizontal"
+      },
+      "when": {
+        "number_neighbours": 1
+      }
+    },
+    {
+      "apply": {
+        "model": "testmod:block/corner_pipe"
+      },
+      "when": {
+        "number_neighbours": 2
+      }
+    }
+  ]
+}

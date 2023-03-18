@@ -1,10 +1,13 @@
 {
   "variants": {
-    "facing=north": { "model": "testmod:block/tuberia_horizontal" },
-    "facing=east": { "model": "testmod:block/tuberia_horizontal", "y": 90 },
-    "facing=south": { "model": "testmod:block/tuberia_horizontal", "y": 180 },
-    "facing=west": { "model": "testmod:block/tuberia_horizontal", "y": 270 },
-    "facing=up": { "model": "testmod:block/tuberia_vertical" },
-    "facing=down": { "model": "testmod:block/tuberia_vertical", "x":180 }
+    "number_neighbours=0": { "model": "testmod:block/tuberia_horizontal" },
+    "number_neighbours=1, up=true": { "model": "testmod:block/tuberia_vertical" },
+    "number_neighbours=1, down=true": { "model": "testmod:block/tuberia_vertical" },
+    "number_neighbours=1": { "model": "testmod:block/tuberia_horizontal" },
+    "number_neighbours=2": { "model": "testmod:block/corner_pipe" },
+    "number_neighbours=3": { "model": "testmod:block/tuberia_horizontal"},
+    "number_neighbours=4": { "model": "testmod:block/tuberia_vertical" },
+    "number_neighbours=5": { "model": "testmod:block/tuberia_vertical", "x":180 },
+    "number_neighbours=6": { "model": "testmod:block/tuberia_vertical", "x":180 }
   }
 }

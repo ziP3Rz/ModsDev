@@ -1,7 +1,9 @@
 {
 	"credit": "Made with Blockbench",
+	"texture_size": [64, 64],
 	"textures": {
-		"1": "Gaming/Juegos/Minecraft/Mod Development/resources/PipeModels/base_pipe_texture"
+		"1": "testmod:block/base_pipe_texture",
+		"particle": "minecraft:block/iron_block"
 	},
 	"elements": [
 		{

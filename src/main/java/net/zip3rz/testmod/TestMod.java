@@ -57,7 +57,7 @@ public class TestMod {
             event.accept(ModItems.TROCOLON_PRENDIDO);
         }
 
-        if(event.getTab() == CreativeModeTabs.BUILDING_BLOCKS) {
+        if(event.getTab() == CreativeModeTabs.BUILDING_BLOCKS || event.getTab() == ModCreativeModeTabs.TEST_TAB) {
             event.accept(ModBlocks.TUBERIA);
             event.accept(ModBlocks.CUBE);
         }

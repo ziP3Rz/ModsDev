@@ -1,5 +1,11 @@
 {
   "variants": {
-    "": { "model":  "testmod:block/cube" }
+    "number_neighbours=0": { "model":  "testmod:block/tuberia_horizontal" },
+    "number_neighbours=1": { "model":  "testmod:block/tuberia_horizontal" },
+    "number_neighbours=2": { "model":  "testmod:block/tuberia_horizontal" },
+    "number_neighbours=3": { "model":  "testmod:block/tuberia_horizontal" },
+    "number_neighbours=4": { "model":  "testmod:block/tuberia_horizontal" },
+    "number_neighbours=5": { "model":  "testmod:block/tuberia_horizontal" },
+    "number_neighbours=6": { "model":  "testmod:block/tuberia_horizontal" }
   }
 }

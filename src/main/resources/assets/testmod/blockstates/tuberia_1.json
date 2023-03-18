@@ -1,16 +1,10 @@
 {
   "variants": {
-    "axis=x": {
-      "model": "testmod:block/tuberia_horizontal",
-      "x": 90,
-      "y": 90
-    },
-    "axis=y": {
-      "model": "testmod:block/tuberia_vertical"
-    },
-    "axis=z": {
-      "model": "testmod:block/tuberia_horizontal",
-      "x": 90
-    }
+    "facing=north": { "model": "testmod:block/tuberia_horizontal" },
+    "facing=east": { "model": "testmod:block/tuberia_horizontal", "y": 90 },
+    "facing=south": { "model": "testmod:block/tuberia_horizontal", "y": 180 },
+    "facing=west": { "model": "testmod:block/tuberia_horizontal", "y": 270 },
+    "facing=up": { "model": "testmod:block/tuberia_vertical" },
+    "facing=down": { "model": "testmod:block/tuberia_vertical", "x":180 }
   }
 }
