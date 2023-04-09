@@ -39,6 +39,7 @@ public class CubeBlock extends Block {
         map.put(Direction.DOWN, DOWN);
     }));
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
+    public static final DirectionProperty DIRECTION = BlockStateProperties.FACING;
     public static final IntegerProperty NEIGHBOURS = IntegerProperty.create("number_neighbours", 0, 6);
     private final Block base;
     private final BlockState baseState;
@@ -68,22 +69,40 @@ public class CubeBlock extends Block {
     public BlockState getStateForPlacement(BlockPlaceContext blockPlaceContext) {
         Level level = blockPlaceContext.getLevel();
         BlockPos blockPosition = blockPlaceContext.getClickedPos();
-        BlockState toReturn = this.defaultBlockState();
-        List<Boolean> directionStates = new ArrayList<Boolean>(UPDATE_SHAPE_ORDER.length);
+        Map<Direction, Boolean> directionStates = new HashMap<>();
+        Map<Direction, Pair<BlockPos, BlockState>> neighbours = getNeighboursBlockStates(level, blockPosition);
         for (Direction direction : UPDATE_SHAPE_ORDER) {
-            directionStates.add(getNeighboursBlockStates(level, blockPosition).get(direction).getSecond().is(this));
+            directionStates.put(direction, (neighbours.get(direction).getSecond().is(this)));
         }
-        return toReturn.setValue(NEIGHBOURS, getNumberOfCubeNeighbours(level, blockPosition))
-                .setValue(WEST, directionStates.get(0))
-                .setValue(EAST, directionStates.get(1))
-                .setValue(NORTH, directionStates.get(2))
-                .setValue(SOUTH, directionStates.get(3))
-                .setValue(DOWN, directionStates.get(4))
-                .setValue(UP, directionStates.get(5))
-                .setValue(FACING, blockPlaceContext.getClickedFace().getOpposite());
+        return defaultBlockState().setValue(NEIGHBOURS, getNumberOfCubeNeighbours(level, blockPosition))
+                .setValue(WEST, directionStates.get(Direction.WEST))
+                .setValue(EAST, directionStates.get(Direction.EAST))
+                .setValue(NORTH, directionStates.get(Direction.NORTH))
+                .setValue(SOUTH, directionStates.get(Direction.SOUTH))
+                .setValue(DOWN, directionStates.get(Direction.DOWN))
+                .setValue(UP, directionStates.get(Direction.UP));
+                //.setValue(DIRECTION, blockPlaceContext.getClickedFace().getOpposite());
     }
 
-    // public DirectionProperty getFacing (BlockPlaceContext blockPlaceContext, List<Boolean> directionStates) {}
+    /*public Direction.Axis getAxis (BlockPlaceContext blockPlaceContext, Map<Direction, Boolean> directionStates) {
+        Level level = blockPlaceContext.getLevel();
+        BlockPos blockPosition = blockPlaceContext.getClickedPos();
+        switch (getNumberOfCubeNeighbours(level, blockPosition)) {
+            case 0:
+                return Direction.Axis.X;
+            case 1:
+                if ( directionStates.get(Direction.UP) || directionStates.get(Direction.DOWN)){
+                    return Direction.Axis.Y;
+                } else {
+                    if (directionStates.get(Direction.NORTH) || directionStates.get(Direction.SOUTH)){
+                        return Direction.Axis.X;
+                    } else {
+                        return Direction.Axis.Z;
+                    }
+                }
+        }
+        return Direction.Axis.X;
+    }*/
 
     public int getNumberOfCubeNeighbours (BlockGetter blockGetter, BlockPos blockPosition) {
         int count = 0;
@@ -93,7 +112,7 @@ public class CubeBlock extends Block {
         return count;
     }
 
-    private Map<Direction, Pair<BlockPos, BlockState>> getNeighboursBlockStates(BlockGetter blockGetter, BlockPos blockPosition) {
+    public Map<Direction, Pair<BlockPos, BlockState>> getNeighboursBlockStates(BlockGetter blockGetter, BlockPos blockPosition) {
         return getNeighboursBlockStates(blockGetter, blockPosition, false, false);
     }
 
@@ -136,11 +155,15 @@ public class CubeBlock extends Block {
 
     @Override
     public void onPlace(BlockState startBlockState, Level level, BlockPos blockPosition, BlockState finalBlockState, boolean p_56965_) {
+        System.out.println(startBlockState);
+        System.out.println(finalBlockState);
         if (!startBlockState.is(finalBlockState.getBlock())) {
+            System.out.println(startBlockState);
             Map<Direction, Pair<BlockPos, BlockState>> neighbours = getNeighboursBlockStates(level, blockPosition, true, false);
             for (Direction direction : UPDATE_SHAPE_ORDER) {
                 level.setBlockAndUpdate(neighbours.get(direction).getFirst(), neighbours.get(direction).getSecond());
             }
+            System.out.println();
             level.setBlockAndUpdate(blockPosition, startBlockState);
         }
     }
@@ -167,7 +190,7 @@ public class CubeBlock extends Block {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
-        pBuilder.add(NEIGHBOURS, NORTH, SOUTH, WEST, EAST, UP, DOWN, FACING);
+        pBuilder.add(NEIGHBOURS, NORTH, SOUTH, WEST, EAST, UP, DOWN);
     }
 
 

@@ -3,6 +3,8 @@ package net.zip3rz.testmod.block.custom;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.mojang.datafixers.util.Pair;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -32,150 +34,139 @@ import java.util.Map;
     Voxelshapes en funcion de vecinos
  */
 public class TuberiaBlock extends Block{
+    protected static final Direction[] UPDATE_SHAPE_ORDER = new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.DOWN, Direction.UP};
     private static final Direction[] DIRECTIONS = Direction.values();
-    Direction[] directions = {Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.DOWN, Direction.UP};
     public static final BooleanProperty NORTH = BlockStateProperties.NORTH;
     public static final BooleanProperty EAST = BlockStateProperties.EAST;
     public static final BooleanProperty SOUTH = BlockStateProperties.SOUTH;
     public static final BooleanProperty WEST = BlockStateProperties.WEST;
     public static final BooleanProperty UP = BlockStateProperties.UP;
     public static final BooleanProperty DOWN = BlockStateProperties.DOWN;
-    public static final Map<Direction, BooleanProperty> PROPERTY_BY_DIRECTION =
-            Maps.newEnumMap(ImmutableMap.of(
-                    Direction.NORTH, NORTH,
-                    Direction.EAST, EAST,
-                    Direction.SOUTH, SOUTH,
-                    Direction.WEST, WEST,
-                    Direction.UP, UP,
-                    Direction.DOWN, DOWN
-            ));
+    public static final Map<Direction, BooleanProperty> PROPERTY_BY_DIRECTION = ImmutableMap.copyOf(Util.make(Maps.newEnumMap(Direction.class), (map) -> {
+        map.put(Direction.NORTH, NORTH);
+        map.put(Direction.EAST, EAST);
+        map.put(Direction.SOUTH, SOUTH);
+        map.put(Direction.WEST, WEST);
+        map.put(Direction.UP, UP);
+        map.put(Direction.DOWN, DOWN);
+    }));
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
-
+    public static final DirectionProperty DIRECTION = BlockStateProperties.FACING;
     public static final IntegerProperty NEIGHBOURS = IntegerProperty.create("number_neighbours", 0, 6);
-
+    private final Block base;
+    private final BlockState baseState;
     private static final VoxelShape SHAPE =  Block.box(4, 4, 0, 12, 12, 16);
-
-
-    public TuberiaBlock(Properties properties) {
-        super(properties);
-    }
-
-
     @Override
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
         return SHAPE;
     }
 
-    /**
-     * @param placeContext El contexto donde se sitúa el bloque.
-     * Setear las variables del blockstate: lógica para selección de los modelo.
-     * @return BlockState
-      */
+    public TuberiaBlock(Properties properties) {
+        super(properties);
+        this.base = Blocks.AIR; // These are unused, fields are redirected
+        this.baseState = Blocks.AIR.defaultBlockState();
+        this.registerDefaultState(this.stateDefinition.any()
+                .setValue(NEIGHBOURS, 0)
+                .setValue(NORTH, false)
+                .setValue(SOUTH, false)
+                .setValue(WEST, false)
+                .setValue(EAST, false)
+                .setValue(UP, false)
+                .setValue(DOWN, false)
+        );
+    }
 
     @Override
-    public BlockState getStateForPlacement(BlockPlaceContext placeContext) {
-        Level blockgetter = placeContext.getLevel(); //Comprobar si está bien el tipo Level
-        BlockPos blockpos = placeContext.getClickedPos();
-        BlockState state = blockgetter.getBlockState(blockpos);
-        Direction[] directions = {Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.DOWN, Direction.UP};
-        BlockPos[] blockPositions = {
-                blockpos.north(),
-                blockpos.east(),
-                blockpos.south(),
-                blockpos.west(),
-                blockpos.below(),
-                blockpos.above()
-        };
+    public BlockState getStateForPlacement(BlockPlaceContext blockPlaceContext) {
+        Level level = blockPlaceContext.getLevel();
+        BlockPos blockPosition = blockPlaceContext.getClickedPos();
+        Map<Direction, Boolean> directionStates = new HashMap<>();
+        Map<Direction, Pair<BlockPos, BlockState>> neighbours = getNeighboursBlockStates(level, blockPosition);
+        for (Direction direction : UPDATE_SHAPE_ORDER) {
+            directionStates.put(direction, (neighbours.get(direction).getSecond().is(this)));
+        }
+        return defaultBlockState().setValue(NEIGHBOURS, getNumberOfCubeNeighbours(level, blockPosition))
+                .setValue(WEST, directionStates.get(Direction.WEST))
+                .setValue(EAST, directionStates.get(Direction.EAST))
+                .setValue(NORTH, directionStates.get(Direction.NORTH))
+                .setValue(SOUTH, directionStates.get(Direction.SOUTH))
+                .setValue(DOWN, directionStates.get(Direction.DOWN))
+                .setValue(UP, directionStates.get(Direction.UP));
+        //.setValue(DIRECTION, blockPlaceContext.getClickedFace().getOpposite());
+    }
 
-        CollectingNeighborUpdater collectingNeighborUpdater = new CollectingNeighborUpdater(blockgetter, 6);
-        BlockState[] blockStates = new BlockState[blockPositions.length];
+    public int getNumberOfCubeNeighbours (BlockGetter blockGetter, BlockPos blockPosition) {
         int count = 0;
-        for (int i = 0; i < blockPositions.length; i++) {
-            blockStates[i] = blockgetter.getBlockState(blockPositions[i]);
-            if (blockStates[i].is(this)) {
-                count++;
-                blockStates[i].setValue(PROPERTY_BY_DIRECTION.get(directions[i]), blockStates[i].is(this));
-                // blockgetter.markAndNotifyBlock(blockPositions[i], blockgetter.getChunkAt(blockPositions[i]), blockStates[i], blockStates[i], 3, 1);
-            }
-            // collectingNeighborUpdater.neighborChanged(blockpos, blockgetter.getBlockState(blockpos).getBlock(), blockPositions[i]);
-            // collectingNeighborUpdater.shapeUpdate(directions[i], state, blockpos, blockPositions[i], 3, 0);
-            // state.updateNeighbourShapes();
-            // blockgetter.markAndNotifyBlock(blockpos, blockgetter.getChunkAt(blockpos), state, state, 3, 1);
+        for (Map.Entry<Direction, Pair<BlockPos, BlockState>> map : getNeighboursBlockStates(blockGetter, blockPosition).entrySet()) {
+            count += (map.getValue().getSecond().is(this)) ? 1 : 0;
         }
-        // blockgetter.neighborShapeChanged(directions[i], );
-        state.updateNeighbourShapes(blockgetter, blockpos, 3);
-
-        return this.defaultBlockState()
-                .setValue(NORTH, Boolean.valueOf(blockStates[0].is(this)))
-                .setValue(EAST, blockStates[1].is(this))
-                .setValue(SOUTH, blockStates[2].is(this))
-                .setValue(WEST, blockStates[3].is(this))
-                .setValue(DOWN, blockStates[4].is(this))
-                .setValue(UP, blockStates[5].is(this))
-                .setValue(FACING, placeContext.getClickedFace())
-                .setValue(NEIGHBOURS, count);
+        return count;
     }
 
-    public String getPipeShape(BlockState blockState, BlockGetter blockGetter, BlockPos blockPos) {
-        Direction[] directions = {Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.DOWN, Direction.UP};
-        //  HashMap<HashMap<BooleanProperty, Boolean>, BlockState> neighb
+    public Map<Direction, Pair<BlockPos, BlockState>> getNeighboursBlockStates(BlockGetter blockGetter, BlockPos blockPosition) {
+        return getNeighboursBlockStates(blockGetter, blockPosition, false, false);
+    }
 
-        HashMap<Direction, Boolean> neighbourPipeAtDirection = new HashMap<>();
-        // Udar BlockPos.MutableBlockPos blockpos$mutableblockpos.setWithOffset(originalPosition, direction)
-        BlockPos[] blockNeighbourPositions = {
-                blockPos.north(),
-                blockPos.east(),
-                blockPos.south(),
-                blockPos.west(),
-                blockPos.below(),
-                blockPos.above()
+    private Map<Direction, Pair<BlockPos, BlockState>> getNeighboursBlockStates(BlockGetter blockGetter, BlockPos blockPosition, boolean set, boolean destroy) {
+        BlockPos[] blockPositions = {
+                blockPosition.west(),
+                blockPosition.east(),
+                blockPosition.north(),
+                blockPosition.south(),
+                blockPosition.below(),
+                blockPosition.above()
         };
-        BlockState[] blockStates = new BlockState[blockNeighbourPositions.length];
-        int number_neighbours = 0;
-        for (int i = 0; i < blockNeighbourPositions.length; i++) {
-            blockStates[i] = blockGetter.getBlockState(blockNeighbourPositions[i]);
-
-            neighbourPipeAtDirection.put(directions[i], blockStates[i].is(this));
-
-
-            if (blockStates[i].is(this)) {
-                number_neighbours++;
-                blockStates[i].setValue(PROPERTY_BY_DIRECTION.get(directions[i]), blockStates[i].is(this));
+        Map<Direction, Pair<BlockPos, BlockState>> toReturn = new HashMap<>();
+        for (int i = 0; i < blockPositions.length; i++) {
+            if (set && blockGetter.getBlockState(blockPositions[i]).is(this)) {
+                if (destroy) {
+                    toReturn.put(UPDATE_SHAPE_ORDER[i], new Pair(
+                            blockPositions[i],
+                            blockGetter.getBlockState(blockPositions[i])
+                                    .setValue(NEIGHBOURS, blockGetter.getBlockState(blockPositions[i]).getValue(NEIGHBOURS) - 1 )
+                                    .setValue(PROPERTY_BY_DIRECTION.get(UPDATE_SHAPE_ORDER[i].getOpposite()), false ) )
+                    );
+                } else {
+                    toReturn.put(UPDATE_SHAPE_ORDER[i], new Pair(
+                            blockPositions[i],
+                            blockGetter.getBlockState(blockPositions[i])
+                                    .setValue(NEIGHBOURS, blockGetter.getBlockState(blockPositions[i]).getValue(NEIGHBOURS) + 1 )
+                                    .setValue(PROPERTY_BY_DIRECTION.get(UPDATE_SHAPE_ORDER[i].getOpposite()), true )
+                    ) );
+                }
+            } else{
+                toReturn.put(UPDATE_SHAPE_ORDER[i], new Pair(
+                        blockPositions[i],
+                        blockGetter.getBlockState(blockPositions[i])
+                ));
             }
         }
-
-        switch (number_neighbours) {
-            case 0:
-                return "tuberia_horizontal";
-            case 1:
-                if (neighbourPipeAtDirection.get(Direction.UP) || neighbourPipeAtDirection.get(Direction.DOWN)) {
-                    return "tuberia_vertical";
-                }
-                return "tuberia_horizontal";
-            case 2:
-                if (neighbourPipeAtDirection.get(Direction.UP) && neighbourPipeAtDirection.get(Direction.DOWN)) {
-                    return "tuberia_vertical";
-                }
-                else if ((neighbourPipeAtDirection.get(Direction.EAST) && neighbourPipeAtDirection.get(Direction.WEST))
-                || (neighbourPipeAtDirection.get(Direction.NORTH) && neighbourPipeAtDirection.get(Direction.SOUTH))) {
-                    return "tuberia_horizontal";
-                }
-                else {
-                    return "tuberia_esquina";
-                }
-            default:
-                return "tuberia_horizontal";
-        }
-    }
-    // https://gist.github.com/Commoble/6d0be224b46a1f9064e6e3d6b14a55b7
-
-    public BlockState getStateForPlacement_2(BlockPlaceContext pContext) {
-        return this.defaultBlockState().setValue(FACING, pContext.getClickedFace());
+        return toReturn;
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
-        pBuilder.add(FACING, NORTH, EAST, WEST, SOUTH, UP, DOWN, NEIGHBOURS);
+    public void onPlace(BlockState startBlockState, Level level, BlockPos blockPosition, BlockState finalBlockState, boolean p_56965_) {
+        System.out.println(startBlockState);
+        System.out.println(finalBlockState);
+        if (!startBlockState.is(finalBlockState.getBlock())) {
+            System.out.println(startBlockState);
+            Map<Direction, Pair<BlockPos, BlockState>> neighbours = getNeighboursBlockStates(level, blockPosition, true, false);
+            for (Direction direction : UPDATE_SHAPE_ORDER) {
+                level.setBlockAndUpdate(neighbours.get(direction).getFirst(), neighbours.get(direction).getSecond());
+            }
+            System.out.println();
+            level.setBlockAndUpdate(blockPosition, startBlockState);
+        }
+    }
+    @Override
+    public void onRemove(BlockState startBlockState, Level level, BlockPos blockPosition, BlockState finalBlockState, boolean p_51542_) {
+        if (!startBlockState.is(finalBlockState.getBlock())) {
+            Map<Direction, Pair<BlockPos, BlockState>> neighbours = getNeighboursBlockStates(level, blockPosition, true, true);
+            for (Direction direction : UPDATE_SHAPE_ORDER) {
+                level.setBlockAndUpdate(neighbours.get(direction).getFirst(), neighbours.get(direction).getSecond());
+            }
+            level.removeBlockEntity(blockPosition);
+        }
     }
 
     @Override
@@ -188,52 +179,9 @@ public class TuberiaBlock extends Block{
         return pState.rotate(pMirror.getRotation(pState.getValue(FACING)));
     }
 
-
-
-
-    /* public boolean connectsTo(BlockState otherBlockState,  Direction p_53332_) {
-        return otherBlockState.getBlock() instanceof TuberiaBlock;
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
+        pBuilder.add(NEIGHBOURS, NORTH, SOUTH, WEST, EAST, UP, DOWN);
     }
-    */
-
-
-    /*@Override
-    protected static boolean shouldConnectTo(BlockState pState, @Nullable Direction pDirection) {
-        pState.
-        if (pState.is(Blocks.REDSTONE_WIRE)) {
-            return true;
-        } else if (pState.is(Blocks.REPEATER)) {
-            Direction direction = pState.getValue(RepeaterBlock.FACING);
-            return direction == pDirection || direction.getOpposite() == pDirection;
-        } else if (pState.is(Blocks.OBSERVER)) {
-            return pDirection == pState.getValue(ObserverBlock.FACING);
-        } else {
-            return pState.isSignalSource() && pDirection != null;
-        }
-        */
-
-
-    /*protected static final Map<Direction, VoxelShape> SHAPES = new HashMap<Direction, VoxelShape>();
-
-    protected static void calculateShapes(Direction to, VoxelShape shape) {
-        VoxelShape[] buffer = new VoxelShape[] { shape, VoxelShape.empty() };
-
-        int times = (to.getStepZ() - Direction.NORTH.getStepZ() + 4) % 4;
-        for (int i = 0; i < times; i++) {
-            buffer[0].forEachBox((minX, minY, minZ, maxX, maxY, maxZ) -> buffer[1] = VoxelShapes.or(buffer[1],
-                    VoxelShapes.create(1 - maxZ, minY, minX, 1 - minZ, maxY, maxX)));
-            buffer[0] = buffer[1];
-            buffer[1] = VoxelShapes.empty();
-        }
-
-        SHAPES.put(to, buffer[0]);
-    }
-
-    protected void runCalculation(VoxelShape shape) {
-        for (Direction direction : Direction.values()) {
-            calculateShapes(direction, shape);
-        }
-    }*/
-
-
+    // https://gist.github.com/Commoble/6d0be224b46a1f9064e6e3d6b14a55b7
 }
