@@ -1,0 +1,356 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "testmod:block/base_pipe"
+      },
+      "when": {
+        "number_neighbours": "0"
+      }
+    },
+    {
+      "apply": {
+        "model": "testmod:block/base_pipe"
+      },
+      "when": {
+        "OR": [
+          {
+            "north": "true",
+            "number_neighbours": "1"
+          },
+          {
+            "number_neighbours": "1",
+            "south": "true"
+          }
+        ]
+      }
+    },
+    {
+      "apply": {
+        "model": "testmod:block/base_pipe",
+        "y": 90
+      },
+      "when": {
+        "OR": [
+          {
+            "number_neighbours": "1",
+            "west": "true"
+          },
+          {
+            "east": "true",
+            "number_neighbours": "1"
+          }
+        ]
+      }
+    },
+    {
+      "apply": {
+        "model": "testmod:block/base_pipe",
+        "x": 90
+      },
+      "when": {
+        "OR": [
+          {
+            "number_neighbours": "1",
+            "up": "true"
+          },
+          {
+            "down": "true",
+            "number_neighbours": "1"
+          }
+        ]
+      }
+    },
+    {
+      "apply": {
+        "model": "testmod:block/base_pipe",
+        "x": 90
+      },
+      "when": {
+        "down": "true",
+        "number_neighbours": "2",
+        "up": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "testmod:block/base_pipe"
+      },
+      "when": {
+        "north": "true",
+        "number_neighbours": "2",
+        "south": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "testmod:block/base_pipe",
+        "y": 90
+      },
+      "when": {
+        "east": "true",
+        "number_neighbours": "2",
+        "west": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "testmod:block/corner_pipe"
+      },
+      "when": {
+        "down": "true",
+        "east": "true",
+        "number_neighbours": "2"
+      }
+    },
+    {
+      "apply": {
+        "model": "testmod:block/corner_pipe",
+        "y": 90
+      },
+      "when": {
+        "down": "true",
+        "number_neighbours": "2",
+        "south": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "testmod:block/corner_pipe",
+        "y": 180
+      },
+      "when": {
+        "down": "true",
+        "number_neighbours": "2",
+        "west": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "testmod:block/corner_pipe",
+        "y": 270
+      },
+      "when": {
+        "down": "true",
+        "north": "true",
+        "number_neighbours": "2"
+      }
+    },
+    {
+      "apply": {
+        "model": "testmod:block/corner_pipe",
+        "x": 180
+      },
+      "when": {
+        "east": "true",
+        "number_neighbours": "2",
+        "up": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "testmod:block/corner_pipe",
+        "x": 180,
+        "y": 90
+      },
+      "when": {
+        "number_neighbours": "2",
+        "south": "true",
+        "up": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "testmod:block/corner_pipe",
+        "x": 180,
+        "y": 180
+      },
+      "when": {
+        "number_neighbours": "2",
+        "up": "true",
+        "west": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "testmod:block/corner_pipe",
+        "x": 180,
+        "y": 270
+      },
+      "when": {
+        "north": "true",
+        "number_neighbours": "2",
+        "up": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "testmod:block/corner_pipe",
+        "x": 90
+      },
+      "when": {
+        "east": "true",
+        "number_neighbours": "2",
+        "south": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "testmod:block/corner_pipe",
+        "x": 90,
+        "y": 90
+      },
+      "when": {
+        "number_neighbours": "2",
+        "south": "true",
+        "west": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "testmod:block/corner_pipe",
+        "x": 90,
+        "y": 180
+      },
+      "when": {
+        "north": "true",
+        "number_neighbours": "2",
+        "west": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "testmod:block/corner_pipe",
+        "x": 90,
+        "y": 270
+      },
+      "when": {
+        "east": "true",
+        "north": "true",
+        "number_neighbours": "2"
+      }
+    },
+    {
+      "apply": {
+        "model": "testmod:block/t_pipe"
+      },
+      "when": {
+        "down": "true",
+        "east": "true",
+        "north": "false",
+        "number_neighbours": "3",
+        "south": "false",
+        "up": "true",
+        "west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "testmod:block/t_pipe",
+        "y": 90
+      },
+      "when": {
+        "down": "true",
+        "east": "false",
+        "north": "true",
+        "number_neighbours": "3",
+        "south": "false",
+        "up": "true",
+        "west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "testmod:block/t_pipe",
+        "y": 180
+      },
+      "when": {
+        "down": "true",
+        "east": "false",
+        "north": "false",
+        "number_neighbours": "3",
+        "south": "false",
+        "up": "true",
+        "west": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "testmod:block/t_pipe",
+        "y": 270
+      },
+      "when": {
+        "down": "true",
+        "east": "false",
+        "north": "false",
+        "number_neighbours": "3",
+        "south": "true",
+        "up": "true",
+        "west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "testmod:block/t_pipe",
+        "x": 90
+      },
+      "when": {
+        "down": "false",
+        "east": "true",
+        "north": "false",
+        "number_neighbours": "3",
+        "south": "true",
+        "up": "false",
+        "west": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "testmod:block/t_pipe",
+        "x": 90,
+        "y": 90
+      },
+      "when": {
+        "down": "false",
+        "east": "true",
+        "north": "true",
+        "number_neighbours": "3",
+        "south": "true",
+        "up": "false",
+        "west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "testmod:block/t_pipe",
+        "x": 90,
+        "y": 180
+      },
+      "when": {
+        "down": "false",
+        "east": "true",
+        "north": "true",
+        "number_neighbours": "3",
+        "south": "false",
+        "up": "false",
+        "west": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "testmod:block/t_pipe",
+        "x": 90,
+        "y": 270
+      },
+      "when": {
+        "down": "false",
+        "east": "false",
+        "north": "true",
+        "number_neighbours": "3",
+        "south": "true",
+        "up": "false",
+        "west": "true"
+      }
+    }
+  ]
+}

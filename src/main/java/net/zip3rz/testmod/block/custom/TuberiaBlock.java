@@ -1,6 +1,5 @@
 package net.zip3rz.testmod.block.custom;
 
-
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
@@ -22,7 +21,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
 
 // TODO: Las tuberias puede ser BaseEntityBlock (pues va a tener un menú provider)=
 /* CLASES POSIBLES PARA HEREDAR:
